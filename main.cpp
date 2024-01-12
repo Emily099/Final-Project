@@ -1,81 +1,74 @@
-// #include <iostream>
-// #include <raylib.h>
-
-// using namespace std;
-
-// int main () {
-
-//     const int screenWidth = 800;
-//     const int screenHeight = 600;
-//     int ball_x = 100;
-//     int ball_y = 100;
-//     int ball_speed_x = 5;
-//     int ball_speed_y = 5;
-//     int ball_radius = 15;
-
-//     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
-//     SetTargetFPS(60);
-
-//     while (WindowShouldClose() == false){
-//         BeginDrawing();
-//         ClearBackground(BLACK);
-//         ball_x += ball_speed_x;
-//         ball_y += ball_speed_y;
-
-//         if(ball_x + ball_radius >= screenWidth  || ball_x - ball_radius <= 0)
-//         {
-//             ball_speed_x *= -1;
-//         }
-
-//         if(ball_y + ball_radius >= screenHeight  || ball_y - ball_radius <= 0)
-//         {
-//             ball_speed_y *= -1;
-//         }
-
-//         DrawCircle(ball_x,ball_y,ball_radius, WHITE);
-//         EndDrawing();
-//     }
-
-//     CloseWindow();
-//     return 0;
-// }
-
+#include <iostream>
 #include"raylib.h"
 
+using namespace std;
+
 int main(){
+    int totalFrames = 8, totalActions = 10, actionNum = 4;
+    Rectangle screen = {0, 0, 800, 500};
+
+    //SET UP WINDOW
+    // int windowWidth = 800;
+    // int windowHeight = 500;
     
-    int windowWidth = 800;
-    int windowHeight = 500;
-    
-    InitWindow(windowWidth,windowHeight,"YOUR GAME");
+    InitWindow(screen.width, screen.height, "YOUR GAME");
     SetTargetFPS(60);
     
+    //char/img import and dimensions
+    Texture2D hero = LoadTexture("D:/Emily/Grade 12/Computer Studies/Final Project/catSpriteSheet.png");
     
-    //character import and dimensions
-    Texture2D hero = LoadTexture("textures/hero.png");
-    
-         //dimensions of hero
     Rectangle heroRec;
-    heroRec.width = hero.width/8;   //dividing by 8 because there are 8 frames
-    heroRec.height = hero.height;
+    heroRec.width = hero.width / totalFrames;
+    heroRec.height = hero.height / totalActions;
     heroRec.x = 0;
     heroRec.y = 0;
-        //position of hero
-    Vector2 heroPos;
-    heroPos.x = windowWidth/2 - heroRec.width/2;
-    heroPos.y = windowHeight/2 - heroRec.height;
     
+    Vector2 heroCenter = {(hero.width / 2.0), (hero.height / 2.0)};
+    //heroPos.x = (screen.width) / 2;// + 100 - heroRec.width;
+    //heroPos.y = (screen.height) / 2;//+100 - heroRec.height/2;
     
+    Vector2 heroPos = {(screen.width / 2), (screen.height / 2)};
+
+    int frame = 0;
     
-    
-    while(WindowShouldClose()==false){
-         BeginDrawing();
+    float updateTime = 1.0 / 12.0;
+    float runningTime = 0.0;
+
+    //GAME LOOP
+
+    heroRec.y = hero.height/totalActions * actionNum;
+
+    while(!WindowShouldClose())
+    {
+        const float dT = GetFrameTime();
+        BeginDrawing();
         ClearBackground(WHITE);
+
+        //updating the frame for the animation
+        runningTime += dT;
+        if(runningTime >= updateTime)
+        {
+            runningTime = 0;
+            
+            heroRec.x = hero.width/totalFrames * frame;
+            frame++;
+            if(frame == totalFrames) // when frame == totalFrames, means is past last frame (since "frame" starts count at 0), so must reset "frame" to 0 again. NOT frame > totalFrames since "frame" starts counting at 0, unlike "totalFrames".
+            {
+                frame = 0;
+            }
+        }
         
-          //draws the image on the screen 
-         DrawTextureRec(hero,heroRec,heroPos,WHITE);
-       
-        ClearBackground(BLACK);
+        //draw texture
+        DrawTexturePro
+        (
+            hero, 
+            heroRec, 
+            (Rectangle) {heroPos.x, heroPos.y, (5 * heroRec.width), (5 * heroRec.height)}, 
+            heroCenter, 
+            0, 
+            WHITE
+        );
+             
         EndDrawing();
     }
     UnloadTexture(hero);
